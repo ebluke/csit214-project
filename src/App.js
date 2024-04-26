@@ -1,9 +1,12 @@
 import * as React from "react"
-import { ChakraProvider, Text } from "@chakra-ui/react"
+import { ChakraProvider, Box } from "@chakra-ui/react"
 import AppLayout from "./layout/AppLayout"
+
 import Login from "./pages/auth/Login"
-import Dashboard from "./pages/dashboard/Dashboard"
 import SignUp from "./pages/auth/SignUp"
+import Flights from "./pages/Flights"
+import Home from "./pages/Home"
+import MyAccount from "./pages/MyAccount"
 
 import {
 	createBrowserRouter,
@@ -16,7 +19,7 @@ import {
 const router = createBrowserRouter([
 	{
 		path: "/",
-		element: <Navigate to="/login" />,
+		element: <Home />,
 	},
 	{
 		path: "/login",
@@ -27,18 +30,27 @@ const router = createBrowserRouter([
 		element: <SignUp />,
 	},
 	{
-		path: "/dashboard",
-		element: <Dashboard />,
+		path: "/flights",
+		element: <Flights />,
+	},
+	{
+		path: "/my-account",
+		element: <MyAccount />,
 	},
 ])
 
 function App() {
 	return (
-		<ChakraProvider>
-			<AppLayout>
-				<RouterProvider router={router} />
-			</AppLayout>
-		</ChakraProvider>
+		<Box
+			minH="100vh"
+			zIndex="-999999"
+			bgImage="url('/background.png')"
+			backgroundPosition="center"
+			backgroundRepeat="no-repeat"
+			backgroundSize="cover"
+		>
+			<RouterProvider router={router} />
+		</Box>
 	)
 }
 
