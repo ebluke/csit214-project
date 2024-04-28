@@ -38,6 +38,7 @@ export default function Header() {
 							ml="1rem"
 							py="1.5rem"
 							px="1.5rem"
+							onClick={() => navigate("/login")}
 						>
 							Log in
 						</Button>

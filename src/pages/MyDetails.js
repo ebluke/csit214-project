@@ -1,6 +1,5 @@
 import React from "react"
 import { observer } from "mobx-react"
-import AppLayout from "../../layout/AppLayout"
 import {
 	Center,
 	Text,
@@ -22,10 +21,11 @@ import {
 	Link,
 	useNavigate,
 } from "react-router-dom"
-import { UserStore } from "../../stores/UserStore"
-import FInput from "../../components/FInput"
+import { UserStore } from "../stores/UserStore"
+import FInput from "../components/FInput"
+import AppLayout from "../layout/AppLayout"
 
-function SignUp() {
+function MyAccount() {
 	const navigate = useNavigate()
 	const userStore = UserStore
 
@@ -37,7 +37,7 @@ function SignUp() {
 		}
 		navigate("/login")
 	}
-
+	// option is to put AppLayout here and in SignUp and remove it from MyAccount
 	return (
 		<>
 			<Stack
@@ -49,7 +49,7 @@ function SignUp() {
 				spacing="6"
 			>
 				<Text as="b" fontSize="4xl" textAlign="center">
-					Sign Up
+					My Details
 				</Text>
 				<FInput
 					isRequired
@@ -68,7 +68,7 @@ function SignUp() {
 					id="user-password"
 					type="password"
 					name="password"
-					placeholder="Password"
+					placeholder="imagine option to change password"
 					value={userStore.password}
 					onChange={(e) => userStore.set(e.target.name, e.target.value)}
 				/>
@@ -110,4 +110,4 @@ function SignUp() {
 		</>
 	)
 }
-export default observer(SignUp)
+export default observer(MyAccount)

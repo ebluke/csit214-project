@@ -1,12 +1,12 @@
 import * as React from "react"
-import { ChakraProvider, Box } from "@chakra-ui/react"
-import AppLayout from "./layout/AppLayout"
+import { Box } from "@chakra-ui/react"
 
 import Login from "./pages/auth/Login"
 import SignUp from "./pages/auth/SignUp"
 import Flights from "./pages/Flights"
 import Home from "./pages/Home"
 import MyAccount from "./pages/MyAccount"
+import { UserStore } from "./stores/UserStore"
 
 import {
 	createBrowserRouter,
@@ -16,30 +16,33 @@ import {
 	Navigate,
 } from "react-router-dom"
 
-const router = createBrowserRouter([
-	{
-		path: "/",
-		element: <Home />,
-	},
-	{
-		path: "/login",
-		element: <Login />,
-	},
-	{
-		path: "/sign-up",
-		element: <SignUp />,
-	},
-	{
-		path: "/flights",
-		element: <Flights />,
-	},
-	{
-		path: "/my-account",
-		element: <MyAccount />,
-	},
-])
-
 function App() {
+	const userStore = UserStore
+
+	const routes = [
+		{
+			path: "/",
+			element: <Home />,
+		},
+		{
+			path: "/login",
+			element: <Login />,
+		},
+		{
+			path: "/sign-up",
+			element: <SignUp />,
+		},
+		{
+			path: "/flights",
+			element: <Flights />,
+		},
+		{
+			path: "/my-account",
+			element: <MyAccount />,
+		},
+	]
+
+	const router = createBrowserRouter(routes)
 	return (
 		<Box
 			minH="100vh"
