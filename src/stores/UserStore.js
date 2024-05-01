@@ -1,10 +1,9 @@
 import { makeObservable, observable, action, runInAction } from "mobx"
+import userData from "../database/userData"
 
 // Contains State for single user (scrapping functional backened, beyond scope)
 export class UserDataStore {
 	// User Data (stored in backend)
-	users = []
-	loadCounter = 0
 
 	// Session Data
 	email = ""
@@ -28,6 +27,7 @@ export class UserDataStore {
 			fullName: "admin",
 			password: "admin",
 			mobile: "0412345678",
+			flights: [],
 		}
 		this.users[0] = admin
 	}
@@ -46,74 +46,262 @@ export class UserDataStore {
 		this.set("mobileNumber", "")
 	}
 
-	getUserData = () => {
-		const user = {
-			email: this.email,
-			fullName: this.fullName,
-			password: this.password,
-			mobileNumber: this.mobileNumber,
+	getUserData = (email) => {
+		for (let i = 0; i < userData.length; i++) {
+			if (email === userData[i].email) {
+				const user = {
+					id: userData[i].id,
+					email: userData[i].email,
+					fullName: userData[i].fullName,
+					password: userData[i].password,
+					mobileNumber: userData[i].mobileNumber,
+					flights: userData[i].flights,
+				}
+				return user
+			}
 		}
-		return user
+	}
+	getSeatName = (seatNum) => {
+		switch (seatNum) {
+			case 0:
+				return "A1"
+			case 1:
+				return "B1"
+			case 2:
+				return "C1"
+			case 3:
+				return "A2"
+			case 4:
+				return "B2"
+			case 5:
+				return "C2"
+			case 6:
+				return "A3"
+			case 7:
+				return "B3"
+			case 8:
+				return "C3"
+			case 9:
+				return "A4"
+			case 10:
+				return "B4"
+			case 11:
+				return "C4"
+			case 12:
+				return "A5"
+			case 13:
+				return "B5"
+			case 14:
+				return "C5"
+			default:
+				return "null"
+		}
+	}
+
+	getSeats = (flightNumber) => {
+		let seats = []
+		for (let i = 0; i < userData.length; i++) {
+			if (this.email === userData[i].email) {
+				for (let j = 0; j < userData[i].flights.length; j++) {
+					if (flightNumber === userData[i].flights[j].flightNumber) {
+						for (let k = 0; k < userData[i].flights[j].seats.length; k++) {
+							let services = []
+							for (
+								let p = 0;
+								p < userData[i].flights[j].seats[k].services.length;
+								p++
+							) {
+								services.push(userData[i].flights[j].seats[k].services[p])
+							}
+							let seat = {
+								id: userData[i].flights[j].seats[k].id,
+								user: userData[i].flights[j].seats[k].user,
+								services: services,
+							}
+							seats.push(seat)
+						}
+					}
+				}
+			}
+		}
+		return seats
+	}
+
+	getServices = (flightNumber, seat) => {
+		let serviceArr = []
+		const user = this.getUserData(this.email)
+		for (let i = 0; i < user.flights.length; i++) {
+			if (user.flights[i].flightNumber === flightNumber) {
+				for (let j = 0; j < user.flights[i].seats.length; j++) {
+					if (user.flights[i].seats[j].id === seat.id) {
+						for (let k = 0; k < seat.services.length; k++) {
+							serviceArr.push(seat.services[k])
+						}
+					}
+				}
+			}
+		}
+		console.log(serviceArr)
+		return serviceArr
+	}
+
+	// Data Manipulation
+	addUser = (user) => {
+		userData.push(user)
+	}
+
+	removeFlight = (seat, flightNumber) => {
+		const user = this.getUserData(this.email)
+		// find seat in flights (user.flights)
+		for (let i = 0; i < user.flights.length; i++) {
+			if (user.flights[i].flightNumber === flightNumber) {
+				for (let j = 0; j < user.flights[i].seats.length; j++) {
+					if (user.flights[i].seats.length === 1) {
+						// remove seat, then remove flight
+						user.flights[i].seats.splice(j, 1)
+						user.flights.splice(j, 1)
+						return
+					} else if (user.flights[i].seats[j].id === seat.id) {
+						// remove flight from user
+						user.flights[i].seats.splice(j, 1)
+					}
+				}
+			}
+		}
+	}
+
+	addFlight = (flightNumber, departure, destination, times, seat) => {
+		let flightUnique = true
+		const user = this.getUserData(this.email)
+		for (let i = 0; i < user.flights.length; i++) {
+			if (flightNumber === user.flights[i].flightNumber) {
+				flightUnique = false
+				seat.user = this.email
+				user.flights[i].seats.push(seat)
+			}
+		}
+		if (flightUnique) {
+			const newFlight = {
+				flightNumber: flightNumber,
+				departure: departure,
+				destination: destination,
+				times: times,
+				seats: [],
+			}
+			seat.user = this.email
+			newFlight.seats.push(seat)
+
+			user.flights.push(newFlight)
+		}
+	}
+
+	addService = (flightNumber, seat, service) => {
+		const user = this.getUserData(this.email)
+		console.log("seat: " + seat)
+		console.log("Service: " + service)
+
+		for (let i = 0; i < user.flights.length; i++) {
+			if (flightNumber === user.flights[i].flightNumber) {
+				// check seat matches
+				for (let j = 0; j < user.flights[i].seats.length; j++) {
+					if (seat === user.flights[i].seats[j].id) {
+						let currentDate = new Date()
+						let id = Math.floor(
+							Math.random() *
+								(currentDate.getSeconds() * currentDate.getMilliseconds())
+						)
+						// ideally check here if id is unqiue (im just hoping it is for testing sake
+						let serviceObj = { name: service, id: id }
+						user.flights[i].seats[j].services.push(serviceObj)
+					}
+				}
+			}
+		}
+	}
+
+	removeService = (flightNumber, seat, serviceID) => {
+		const user = this.getUserData(this.email)
+		// service in seat in flight in user
+
+		for (let i = 0; i < user.flights.length; i++) {
+			if (user.flights[i].flightNumber === flightNumber) {
+				console.log("1")
+
+				for (let j = 0; j < user.flights[i].seats.length; j++) {
+					if (user.flights[i].seats[j].id === seat.id) {
+						console.log("2")
+
+						for (let k = 0; k < user.flights[i].seats[j].services.length; k++) {
+							console.log(user.flights[i].seats[j].services[k].id)
+							if (user.flights[i].seats[j].services[k].id === serviceID) {
+								// remove service
+								console.log("remove with splice")
+								user.flights[i].seats[j].services.splice(k, 1)
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	// Account Management
 	createAccount = () => {
 		this.isLoading = true
+		let success = true
 		// Check email doesnt exist
 		try {
-			for (let i = 0; i < this.users.length; i++) {
-				if (this.users[i].email === this.email) {
+			for (let i = 0; i < userData.length; i++) {
+				if (userData[i].email === this.email) {
+					// email already exists
+					success = false
 					throw Error()
 				}
 			}
 		} catch (err) {
-			console.log(err)
 			this.set("errMsg", "Email already in use")
 		}
+		if (success) {
+			let id = userData.length
+			const user = {
+				id: id,
+				email: this.email,
+				fullName: this.fullName,
+				password: this.password,
+				mobileNumber: this.mobileNumber,
+				flights: [],
+			}
+			this.addUser(user)
+		}
 
-		this.users[this.users.length + 1] = this.getUserData()
-
-		//If success
-		// add toast message
 		this.isLoading = false
-		console.log(this.users)
 	}
 
 	login = (uname, pword) => {
-		let emailFound = false
 		let success = false
-		try {
-			if (this.users.length <= 0) {
-				this.set("errMsg", "Email not found")
-				throw new Error()
-			}
-			for (let i = 1; i < this.users.length; i++) {
-				if (this.users[i].email === uname) {
-					emailFound = true
-					if (this.users[i].password === pword) {
-						// Success, login
-						success = true
-					} else {
-						this.set("errMsg", "Invalid Password")
-						throw new Error()
-					}
+		if (uname === "" && pword === "") {
+			this.set("errMsg", "Empty inputs")
+			return success
+		}
+		for (let i = 0; i < userData.length; i++) {
+			if (uname === userData[i].email) {
+				if (pword === userData[i].password) {
+					//login
+					success = true
+					this.set("isLoggedIn", true)
+					return success
 				} else {
-					this.set("errMsg", "Email not found")
-					throw new Error()
+					this.set("errMsg", "incorrect password")
+					return success
 				}
 			}
-			if (emailFound === false) {
-				console.log("email not found")
-				this.set("errMsg", "Email not found")
-			}
-			if (success === true) {
-				console.log("logged in")
-				this.set("isLoggedIn", true)
-				this.set("errMsg", "")
-			} else {
-				console.log("not successful logging in")
-			}
-		} catch (err) {}
+		}
+		return success
+	}
+
+	logout = () => {
+		this.clearSessionData()
+		this.set("isLoggedIn", false)
 	}
 
 	constructor() {

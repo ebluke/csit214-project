@@ -19,11 +19,7 @@ export default function Header() {
 			<Stack w="100%" h="100%">
 				<Flex justifyContent="space-between" alignItems="center" w="100%">
 					<Flex alignItems="center" px="1rem">
-						<Image
-							boxSize="48px"
-							src="/Logo.svg"
-							alt="FlyDream Air Logo"
-						></Image>
+						<Image boxSize="48px" src="/Logo.svg" alt="FlyDream Air Logo" />
 						<Text fontSize="3xl" align="center">
 							FlyDream Air
 						</Text>
