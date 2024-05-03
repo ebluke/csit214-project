@@ -20,17 +20,16 @@ function Login() {
 	const userStore = UserStore
 	const [uname, setUname] = useState("")
 	const [pword, setPword] = useState("")
+	const [emsg, setEmsg] = useState("")
 
 	useEffect(() => {
 		userStore.set("isLoggedIn", false)
 	}, [])
 
 	const handleLogin = () => {
-		try {
-			userStore.login(uname, pword)
-		} catch (err) {
-			console.log(err)
-		}
+		userStore.login(uname, pword)
+		setEmsg(userStore.errMsg)
+
 		if (userStore.isLoggedIn) {
 			userStore.set("errMsg", "")
 			navigate("/")
@@ -61,7 +60,7 @@ function Login() {
 						value={pword}
 						onChange={(e) => setPword(e.target.value)}
 					/>
-					<Text color="brand.red">{userStore.errMsg}</Text>
+					<Text color="red">{emsg}</Text>
 
 					<Button
 						color="brand.text"

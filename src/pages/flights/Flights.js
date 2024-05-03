@@ -21,7 +21,6 @@ import { useNavigate } from "react-router-dom"
 import { FlightStore } from "../../stores/FlightStore"
 import flightData from "../../database/flightData"
 import { UserStore } from "../../stores/UserStore"
-import { observer } from "mobx-react"
 
 function Flights() {
 	const flightStore = FlightStore
@@ -79,7 +78,7 @@ function Flights() {
 										key={key}
 									>
 										<Td>{flight.flightNumber}</Td>
-										<Td>{flight.departure}</Td>
+										<Td>{flight.origin}</Td>
 										<Td>{flight.destination}</Td>
 										<Td>{flight.startDate}</Td>
 										<Td>{flight.startTime}</Td>
@@ -103,7 +102,7 @@ function Flights() {
 									<Th>Start Time </Th>
 									<Th>End Date </Th>
 									<Th>End Time </Th>
-									<Th>Seats Left</Th>
+									<Th>Seats Selected</Th>
 								</Tr>
 							</Thead>
 							<Tbody>
@@ -115,22 +114,13 @@ function Flights() {
 											key={key}
 										>
 											<Td>{flight.flightNumber}</Td>
-											<Td>{flight.departure}</Td>
+											<Td>{flight.origin}</Td>
 											<Td>{flight.destination}</Td>
 											<Td>{flight.startDate}</Td>
 											<Td>{flight.startTime}</Td>
 											<Td>{flight.endDate}</Td>
 											<Td>{flight.endTime}</Td>
-											<Td>
-												<Td>{flightStore.getSeatsLeftCount(flight.seats)}</Td>
-												<Flex>
-													{flightStore
-														.getSeatList(flight.seats)
-														.map((seat, key) => (
-															<Text key={key}>{seat}, </Text>
-														))}
-												</Flex>
-											</Td>
+											<Td>{flight.seats.length}</Td>
 										</Tr>
 									))}
 							</Tbody>

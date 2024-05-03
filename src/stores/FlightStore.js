@@ -269,7 +269,7 @@ export class FlightDataStore {
 	generateSeats = () => {
 		let seats = []
 
-		for (let i = 0; i < 15; i++) {
+		for (let i = 0; i < 6 * 16; i++) {
 			let seat = { id: i, user: null, services: [] }
 			seats[i] = seat
 		}
@@ -297,46 +297,24 @@ export class FlightDataStore {
 				}
 				flightData.push(flight)
 			}
-			//console.log(flightData)
+			console.log(flightData)
 		}
 	}
 
 	// Getters
 	getSeatName = (seatNum) => {
-		switch (seatNum) {
-			case 0:
-				return "A1"
-			case 1:
-				return "B1"
-			case 2:
-				return "C1"
-			case 3:
-				return "A2"
-			case 4:
-				return "B2"
-			case 5:
-				return "C2"
-			case 6:
-				return "A3"
-			case 7:
-				return "B3"
-			case 8:
-				return "C3"
-			case 9:
-				return "A4"
-			case 10:
-				return "B4"
-			case 11:
-				return "C4"
-			case 12:
-				return "A5"
-			case 13:
-				return "B5"
-			case 14:
-				return "C5"
-			default:
-				return "null"
+		if (seatNum == -1) {
+			return
 		}
+		let seatPos = seatNum % 6
+		return seatPos
+	}
+	getSeatRow = (seatNum) => {
+		if (seatNum == -1) {
+			return
+		}
+		let seatRow = Math.floor(seatNum / 6)
+		return seatRow
 	}
 
 	getSeatList = (seats) => {
@@ -367,7 +345,7 @@ export class FlightDataStore {
 					startTime: flightData[i].startTime,
 					startDate: flightData[i].startDate,
 					endTime: flightData[i].endTime,
-					endDate: flightData[i].endData,
+					endDate: flightData[i].endDate,
 					seats: flightData[i].seats,
 				}
 				return flight

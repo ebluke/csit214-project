@@ -9,7 +9,7 @@ export class UserDataStore {
 	email = ""
 	fullName = ""
 	password = ""
-	mobileNumber = ""
+	mobileNumber = null
 
 	// Error message
 	errMsg = ""
@@ -26,7 +26,7 @@ export class UserDataStore {
 			email: "admin@gmail.com",
 			fullName: "admin",
 			password: "admin",
-			mobile: "0412345678",
+			mobileNumber: "0412345678",
 			flights: [],
 		}
 		this.users[0] = admin
@@ -170,7 +170,16 @@ export class UserDataStore {
 		}
 	}
 
-	addFlight = (flightNumber, departure, destination, times, seat) => {
+	addFlight = (
+		flightNumber,
+		origin,
+		destination,
+		startDate,
+		startTime,
+		endDate,
+		endTime,
+		seat
+	) => {
 		let flightUnique = true
 		const user = this.getUserData(this.email)
 		for (let i = 0; i < user.flights.length; i++) {
@@ -183,9 +192,12 @@ export class UserDataStore {
 		if (flightUnique) {
 			const newFlight = {
 				flightNumber: flightNumber,
-				departure: departure,
+				origin: origin,
 				destination: destination,
-				times: times,
+				startDate: startDate,
+				startTime: startTime,
+				endDate: endDate,
+				endTime: endTime,
 				seats: [],
 			}
 			seat.user = this.email
@@ -254,13 +266,12 @@ export class UserDataStore {
 			for (let i = 0; i < userData.length; i++) {
 				if (userData[i].email === this.email) {
 					// email already exists
+					this.set("errMsg", "Email already in use")
 					success = false
-					throw Error()
+					throw new Error()
 				}
 			}
-		} catch (err) {
-			this.set("errMsg", "Email already in use")
-		}
+		} catch (err) {}
 		if (success) {
 			let id = userData.length
 			const user = {
@@ -275,25 +286,39 @@ export class UserDataStore {
 		}
 
 		this.isLoading = false
+		return success
 	}
 
 	login = (uname, pword) => {
+		console.log("uname: " + uname + ", pword: " + pword)
 		let success = false
+		console.log("login")
 		if (uname === "" && pword === "") {
 			this.set("errMsg", "Empty inputs")
 			return success
 		}
 		for (let i = 0; i < userData.length; i++) {
+			console.log("users: " + userData[i].email)
 			if (uname === userData[i].email) {
 				if (pword === userData[i].password) {
 					//login
 					success = true
 					this.set("isLoggedIn", true)
+					// set userStore data to user fata
+					let { email, password, fullName, mobileNumber } =
+						this.getUserData(uname)
+					this.set("email", email)
+					this.set("password", password)
+					this.set("fullName", fullName)
+					this.set("mobileNumber", mobileNumber)
 					return success
 				} else {
 					this.set("errMsg", "incorrect password")
 					return success
 				}
+			} else {
+				this.set("errMsg", "No account")
+				console.log("no account")
 			}
 		}
 		return success

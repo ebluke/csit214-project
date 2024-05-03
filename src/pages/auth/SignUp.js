@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { observer } from "mobx-react"
 import AppLayout from "../../layout/AppLayout"
 import {
@@ -28,14 +28,16 @@ import FInput from "../../components/FInput"
 function SignUp() {
 	const navigate = useNavigate()
 	const userStore = UserStore
+	const [emsg, setEmsg] = useState("")
 
 	const handleSubmit = () => {
-		try {
-			userStore.createAccount()
-		} catch (err) {
-			console.log(err)
+		setEmsg("")
+		if (userStore.createAccount()) {
+			navigate("/login")
+		} else {
+			setEmsg(userStore.errMsg)
+			console.log("signup error caught")
 		}
-		navigate("/login")
 	}
 
 	return (
@@ -85,13 +87,14 @@ function SignUp() {
 				<FInput
 					isRequired
 					variant="flushed"
-					type="number"
+					type="text"
 					id="user-mobilenumber"
-					name="mobileNum"
+					name="mobileNumber"
 					placeholder="Mobile Number"
-					value={userStore.mobileNum}
+					value={userStore.mobileNumber}
 					onChange={(e) => userStore.set(e.target.name, e.target.value)}
 				/>
+				<Text color="red">{emsg}</Text>
 				<Flex justifyContent="space-between">
 					<Button
 						w="100%"

@@ -37,7 +37,11 @@ function MyAccount() {
 		}
 		navigate("/login")
 	}
-	// option is to put AppLayout here and in SignUp and remove it from MyAccount
+	const handleLogout = () => {
+		userStore.logout()
+		navigate("/")
+	}
+
 	return (
 		<>
 			<Stack
@@ -85,11 +89,11 @@ function MyAccount() {
 				<FInput
 					isRequired
 					variant="flushed"
-					type="number"
+					type="text"
 					id="user-mobilenumber"
-					name="mobileNum"
+					name="mobileNumber"
 					placeholder="Mobile Number"
-					value={userStore.mobileNum}
+					value={userStore.mobileNumber}
 					onChange={(e) => userStore.set(e.target.name, e.target.value)}
 				/>
 				<Flex justifyContent="space-between">
@@ -104,6 +108,18 @@ function MyAccount() {
 						onClick={() => handleSubmit()}
 					>
 						Submit
+					</Button>
+					<Button
+						w="100%"
+						borderRadius="100px"
+						color="white"
+						bgColor="#405F90"
+						variant="solid"
+						ml="1rem"
+						py="1.5rem"
+						onClick={() => handleLogout()}
+					>
+						Sign out
 					</Button>
 				</Flex>
 			</Stack>
